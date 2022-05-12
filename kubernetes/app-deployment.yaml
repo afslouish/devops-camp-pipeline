@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+  namespace: lhuang
+  labels:
+    app: app
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  minReadySeconds: 20
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: feature-toggle
+        - secretRef:
+            name: db-secret
+        name: app-deployment
+        image: harbor.dev.afsmtddso.com/lhuang-harbor-project/app:971c881-30a60f2
+        ports:
+        - containerPort: 5000
